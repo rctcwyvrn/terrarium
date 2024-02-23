@@ -1,3 +1,3 @@
 open! Core
 
-let () = Command_unix.run Compwiwer_lib.command
+let () = Command_unix.run Compwiwer_lib.Main.command

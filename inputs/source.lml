@@ -1,0 +1,7 @@
+module Point = struct 
+type t = { x : int ; y : int}
+end
+
+module Person = struct 
+type t = { name : string ; location : Point.t }
+end
