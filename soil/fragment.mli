@@ -10,8 +10,8 @@ type t [@@deriving sexp_of]
 
 val init :
   ?label:string ->
-  ?message:Sexp.t ->
-  ?here:Source_code_position.t ->
   ?refers_to:Reference.t ->
   Kind.t ->
+  Sexp.t ->
+  Source_code_position.t ->
   t

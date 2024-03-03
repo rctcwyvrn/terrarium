@@ -7,11 +7,11 @@ end
 type t = {
   label : string option;
   kind : Kind.t;
-  message : Sexp.t option;
-  here : Source_code_position.t option;
+  message : Sexp.t;
+  here : Source_code_position.t;
   refers_to : Reference.t option;
 }
 [@@deriving sexp_of]
 
-let init ?label ?message ?here ?refers_to kind =
+let init ?label ?refers_to kind message here =
   { label; kind; message; here; refers_to }
