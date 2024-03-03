@@ -8,7 +8,8 @@ type t = {
   label : string option;
   kind : Kind.t;
   message : Sexp.t;
-  here : Source_code_position.t;
+  (* fixme-soon: need to make a thing for testing vs real? or maybe just no opaque is fine? *)
+  here : (Source_code_position.t[@sexp.opaque]);
   refers_to : Reference.t option;
 }
 [@@deriving sexp_of]
