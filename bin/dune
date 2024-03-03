@@ -1,6 +1,0 @@
-(executable
- (public_name compwiwer)
- (name main)
- (libraries core core_unix.command_unix compwiwer_lib)
- (preprocess
-  (pps ppx_jane)))

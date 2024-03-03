@@ -6,9 +6,9 @@ description:
 maintainer: ["Lily"]
 authors: ["Lily"]
 license: "LICENSE"
-homepage: "https://github.com/rctcwyvrn/compwiwer"
+homepage: "https://github.com/rctcwyvrn/terrarium"
 doc: ""
-bug-reports: "https://github.com/rctcwyvrn/compwiwer/issues"
+bug-reports: "https://github.com/rctcwyvrn/terrarium/issues"
 depends: [
   "ocaml"
   "dune" {>= "3.14"}
@@ -28,4 +28,4 @@ build: [
     "@doc" {with-doc}
   ]
 ]
-dev-repo: "git+https://github.com/rctcwyvrn/compwiwer.git"
+dev-repo: "git+https://github.com/rctcwyvrn/terrarium.git"

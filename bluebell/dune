@@ -1,5 +1,5 @@
 (library
- (name compwiwer_lib)
+ (name bluebell)
  (libraries core async file_path)
  (inline_tests)
  (preprocess
