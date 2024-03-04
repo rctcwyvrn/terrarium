@@ -9,7 +9,7 @@ type t = {
   kind : Kind.t;
   message : Sexp.t;
   (* fixme-soon: need to make a thing for testing vs real? or maybe just no opaque is fine? *)
-  here : Source_code_position.t;
+  here : (Source_code_position.t[@sexp.opaque]);
   refers_to : Reference.t option;
   tags : t list;
 }

@@ -113,12 +113,11 @@ let lookahead_matches parser =
       match run parser string with
       | Match { info; _ } ->
           let info =
-            List.map
+            List.map info
               ~f:
                 (Fragment.tag
                    ~tag:
                      (Fragment.init Info [%message "thyme->lookahead"] [%here]))
-              info
           in
           Match { rest = string; v = true; info }
       (* Ignore the extra info on no_match? *)
@@ -158,30 +157,37 @@ let zero_or_more parser ~here =
 
 let rec repeat parser ~until =
   let open Let_syntax in
-  match%bind try_ parser with
-  | None ->
-      (* done *)
-      return []
-  | Some v ->
-      if%bind lookahead_matches until then return [ v ]
-      else
-        (* doesn't match the stopper, so continue *)
+  if%bind lookahead_matches until then (* stop repeating *)
+    return []
+  else
+    match%bind try_ parser with
+    | None ->
+        (* done *)
+        return []
+    | Some v ->
         let%bind rest = repeat parser ~until in
         return (v :: rest)
 
-let match_and_assert parser ~pred ~here =
+let match_and_assert parser ~here ~pred ~pred_msg =
   let open Let_syntax in
   let%bind v = parser in
   if pred v then return v
-  else parse_error [%message "thyme->match_and_assert: Assertion failed"] ~here
+  else
+    parse_error
+      [%message "thyme->match_and_assert: Assertion failed" (pred_msg : Sexp.t)]
+      ~here
 
-let whitespace_char = match_and_assert any ~pred:Char.is_whitespace
-let exact_char expected = match_and_assert any ~pred:(Char.equal expected)
+let whitespace_char =
+  match_and_assert any ~pred:Char.is_whitespace ~here:[%here]
+    ~pred_msg:[%message "Char.is_whitespace"]
+
+let exact_char expected =
+  match_and_assert any ~pred:(Char.equal expected) ~here:[%here]
+    ~pred_msg:[%message "Char.equal" (expected : char)]
 
 let exact_string expected ~here =
-  String.to_list expected
-  |> List.map ~f:(exact_char ~here)
-  |> sequential >>| String.of_char_list
+  String.to_list expected |> List.map ~f:exact_char |> sequential
+  >>| String.of_char_list
   |> add_info
        ~frag:
          (Fragment.init Debug
@@ -190,7 +196,7 @@ let exact_string expected ~here =
 
 let any_word ~here =
   (let open Let_syntax in
-   let%map chars = repeat any ~until:(whitespace_char ~here) in
+   let%map chars = repeat any ~until:whitespace_char in
    String.of_char_list chars)
   |> add_info ~frag:(Fragment.init Debug [%message "thyme->any_word"] here)
 
@@ -216,8 +222,8 @@ let%expect_test "eof" =
   [%expect
     {|
   (No_match
-   (((label ()) (kind Error) (message "expected eof")
-     (here thyme/parser.ml:214:17) (refers_to ()) (tags ())))) |}]
+   (((label ()) (kind Error) (message "expected eof") (here <opaque>)
+     (refers_to ()) (tags ())))) |}]
 
 let%expect_test "eof" =
   run (eof ~here:[%here]) [] |> [%sexp_of: unit Out.t] |> print_s;
@@ -251,7 +257,7 @@ let%expect_test "string" =
     (Ok
      ((success (parsed nyaa))
       (((label ()) (kind Debug) (message (thyme->exact_string (expected nyaa)))
-        (here thyme/parser.ml:243:48) (refers_to ()) (tags ()))))) |}]
+        (here <opaque>) (refers_to ()) (tags ()))))) |}]
 
 let%expect_test "choice: fail" =
   let here = [%here] in
@@ -268,7 +274,7 @@ let%expect_test "choice: fail" =
          (((label ()) (kind Error)
            (message
             (thyme->parse_failed (error "thyme->choice: No choices match")))
-           (here thyme/parser.ml:257:13) (refers_to ()) (tags ())))))) |}]
+           (here <opaque>) (refers_to ()) (tags ())))))) |}]
 
 let%expect_test "choice: fail" =
   let here = [%here] in
@@ -288,12 +294,12 @@ let%expect_test "choice: fail" =
             (Ok
              (match
               (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-                (here thyme/parser.ml:274:13) (refers_to ())
+                (here <opaque>) (refers_to ())
                 (tags
-                 (((label ()) (kind Info) (message thyme->lookahead)
-                   (here thyme/parser.ml:120:71) (refers_to ()) (tags ())))))
+                 (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
+                   (refers_to ()) (tags ())))))
                ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-                (here thyme/parser.ml:274:13) (refers_to ()) (tags ()))))) |}]
+                (here <opaque>) (refers_to ()) (tags ()))))) |}]
 
 let%expect_test "repetitions: one or more (success)" =
   let parser = one_or_more any ~here:[%here] in
@@ -333,6 +339,7 @@ let%expect_test "word" =
           (Fragment.init Debug [%message ""] here
              ~label:"parser->first-word-in-pair")
     in
+    let%bind _whitespace = zero_or_more whitespace_char ~here in
     let%bind second = any_word ~here in
     return [%message (first : string) (second : string)]
   in
@@ -341,11 +348,11 @@ let%expect_test "word" =
   [%expect
     {|
     (Ok
-     (((first first_word) (second " second_word"))
-      (((label ()) (kind Debug) (message thyme->any_word)
-        (here thyme/parser.ml:329:15) (refers_to ())
+     (((first first_word) (second second_word))
+      (((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
+        (refers_to ())
         (tags
          (((label (parser->first-word-in-pair)) (kind Debug) (message ())
-           (here thyme/parser.ml:329:15) (refers_to ()) (tags ())))))
-       ((label ()) (kind Debug) (message thyme->any_word)
-        (here thyme/parser.ml:329:15) (refers_to ()) (tags ()))))) |}]
+           (here <opaque>) (refers_to ()) (tags ())))))
+       ((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
+        (refers_to ()) (tags ()))))) |}]
