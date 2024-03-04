@@ -15,3 +15,5 @@ val init :
   Sexp.t ->
   Source_code_position.t ->
   t
+
+val tag : t -> tag:t -> t
