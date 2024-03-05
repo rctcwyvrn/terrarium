@@ -1,20 +1,6 @@
 open! Core
 open! Soil
-(*
-   type 'a t = {
-     parse: string -> ('a With_report.t
-     ; info : Fragment.t list }
 
-     let init ~parse = {parse ; info = []}
-
-   let any = init (fun s -> match s with
-   | c::cs -> (cs)) *)
-
-(* - move source code positions, pass in a string wrapper with accessors by line+col?
-   - accumulate debug fragments
-   - make progress only possible on non-error? should everything just be peeking? just needs a change in
-   the two base cases and [bind]
-*)
 module M = struct
   module Out = struct
     (**  A [Parser.t] when given a string outputs either 
@@ -22,7 +8,11 @@ module M = struct
         - No match, with debug + error logs *)
 
     type 'a t =
-      | Match of { rest : char list; v : 'a; info : Fragment.t list }
+      | Match of {
+          next : Source_file.Position.t;
+          v : 'a;
+          info : Fragment.t list;
+        }
       | No_match of Fragment.t list
     [@@deriving sexp_of]
 
@@ -33,18 +23,18 @@ module M = struct
       | No_match info -> No_match (List.map ~f:(Fragment.tag ~tag) info)
   end
 
-  type 'a t = F of (char list -> 'a Out.t)
+  type 'a t = F of (Source_file.t -> Source_file.Position.t -> 'a Out.t)
 
-  let run (F parse) s = parse s
+  let run (F parse) source position = parse source position
 
   let bind (F parse) ~f =
     F
-      (fun string ->
-        match parse string with
-        | Match { rest; v; info } -> (
-            match run (f v) rest with
-            | Match { rest; v; info = new_info } ->
-                Match { rest; v; info = info @ new_info }
+      (fun source position ->
+        match parse source position with
+        | Match { next; v; info } -> (
+            match run (f v) source next with
+            | Match { next; v; info = new_info } ->
+                Match { next; v; info = info @ new_info }
             | No_match new_info -> No_match (info @ new_info))
         | No_match info -> No_match info)
 
@@ -54,13 +44,13 @@ module M = struct
       | Some loc -> [ Fragment.init Debug [%message "thyme->atom"] loc ]
       | None -> []
     in
-    F (fun s -> Match { rest = s; v; info })
+    F (fun _source pos -> Match { next = pos; v; info })
 
   let return v = return' v
 
   let parse_error error ~here =
     F
-      (fun _ ->
+      (fun _ _ ->
         No_match
           [
             Fragment.init Error
@@ -68,10 +58,12 @@ module M = struct
               here;
           ])
 
-  let tag (F parse) ~tag = F (Fn.compose (Out.tag ~tag) parse)
+  let tag (F parse) ~tag =
+    F (fun source pos -> parse source pos |> Out.tag ~tag)
 
   let add_info t ~frag =
-    bind t ~f:(fun v -> F (fun s -> Match { rest = s; v; info = [ frag ] }))
+    bind t ~f:(fun v ->
+        F (fun _source pos -> Match { next = pos; v; info = [ frag ] }))
 
   let map = `Define_using_bind
 end
@@ -81,18 +73,23 @@ include Monad.Make (M)
 
 let any =
   F
-    (fun string ->
-      match string with
-      | first :: rest -> Match { rest; v = first; info = [] }
-      | [] -> No_match [])
+    (fun source pos ->
+      match Source_file.read_one source ~from:pos with
+      | Some char, next -> Match { next; v = char; info = [] }
+      | None, _ -> No_match [])
 
 let eof ~here =
   F
-    (fun string ->
-      match string with
-      | _first :: _rest ->
-          No_match [ Fragment.init Error [%message "expected eof"] here ]
-      | [] -> Match { rest = []; v = (); info = [] })
+    (fun source pos ->
+      match Source_file.read_one source ~from:pos with
+      | Some char, _ ->
+          No_match
+            [
+              Fragment.init Error
+                [%message "expected eof, got" (char : char)]
+                here;
+            ]
+      | None, next -> Match { next; v = (); info = [] })
 
 let sequential operations =
   let open Let_syntax in
@@ -109,8 +106,8 @@ let sequential operations =
    Never consumes *)
 let lookahead_matches parser =
   F
-    (fun string ->
-      match run parser string with
+    (fun source pos ->
+      match run parser source pos with
       | Match { info; _ } ->
           let info =
             List.map info
@@ -119,9 +116,9 @@ let lookahead_matches parser =
                    ~tag:
                      (Fragment.init Info [%message "thyme->lookahead"] [%here]))
           in
-          Match { rest = string; v = true; info }
+          Match { next = pos; v = true; info }
       (* Ignore the extra info on no_match? *)
-      | No_match _info -> Match { rest = string; v = false; info = [] })
+      | No_match _info -> Match { next = pos; v = false; info = [] })
 
 (* Try the parsers from left to right, parsing the first one that consumes input
 
@@ -135,11 +132,11 @@ let rec choice parsers_to_try ~here =
 
 let try_ parser =
   F
-    (fun string ->
-      match run parser string with
-      | Match { rest; v; info } -> Match { rest; v = Some v; info }
+    (fun source pos ->
+      match run parser source pos with
+      | Match { next; v; info } -> Match { next; v = Some v; info }
       (* Drop all state from stepping forward *)
-      | No_match _info -> Match { rest = string; v = None; info = [] })
+      | No_match _info -> Match { next = pos; v = None; info = [] })
 
 let one_or_more parser ~here =
   let rec again () =
@@ -201,34 +198,42 @@ let any_word ~here =
   |> add_info ~frag:(Fragment.init Debug [%message "thyme->any_word"] here)
 
 let parse_complete parser s =
-  match run parser (String.to_list s) with
-  | Match { rest = []; v; info } -> Ok (v, info)
-  | Match { rest = remaining; v = _; info } ->
+  let source = Source_file.of_file_contents s in
+  let pos = Source_file.start_of_file source in
+  match run parser source pos with
+  | Match { next = Source_file.Position.Eof; v; info } -> Ok (v, info)
+  | Match { next = ended_at; v = _; info } ->
       error_s
         [%message
           "did not finish parsing input"
-            (remaining : char list)
+            (ended_at : Source_file.Position.t)
             (info : Fragment.t list)]
   | No_match info -> error_s [%message "parser failed" (info : Fragment.t list)]
 
 let%expect_test "any" =
-  run any (String.to_list "asdf") |> [%sexp_of: char Out.t] |> print_s;
-  [%expect {|
-    (Match (rest (s d f)) (v a) (info ())) |}]
+  let source = Source_file.of_file_contents "asdf" in
+  let pos = Source_file.start_of_file source in
+  run any source pos |> [%sexp_of: char Out.t] |> print_s;
+  [%expect
+    {|
+    (Match (next (Valid (line_num 0) (pos_in_line 1))) (v a) (info ())) |}]
 
 let%expect_test "eof" =
-  run (eof ~here:[%here]) (String.to_list "asdf")
-  |> [%sexp_of: unit Out.t] |> print_s;
+  let source = Source_file.of_file_contents "asdf" in
+  let pos = Source_file.start_of_file source in
+  run (eof ~here:[%here]) source pos |> [%sexp_of: unit Out.t] |> print_s;
   [%expect
     {|
   (No_match
-   (((label ()) (kind Error) (message "expected eof") (here <opaque>)
-     (refers_to ()) (tags ())))) |}]
+   (((label ()) (kind Error) (message ("expected eof, got" (char a)))
+     (here <opaque>) (refers_to ()) (tags ())))) |}]
 
 let%expect_test "eof" =
-  run (eof ~here:[%here]) [] |> [%sexp_of: unit Out.t] |> print_s;
-  [%expect {|
-  (Match (rest ()) (v ()) (info ())) |}]
+  let source = Source_file.of_file_contents "" in
+  let pos = Source_file.start_of_file source in
+  [%expect {| |}];
+  run (eof ~here:[%here]) source pos |> [%sexp_of: unit Out.t] |> print_s;
+  [%expect {| (Match (next Eof) (v ()) (info ())) |}]
 
 let%expect_test "combined" =
   let open Let_syntax in
@@ -241,7 +246,8 @@ let%expect_test "combined" =
   in
   parse_complete parser "abc"
   |> [%sexp_of: ((char * char * char) * Fragment.t list) Or_error.t] |> print_s;
-  [%expect {| (Ok ((a b c) ())) |}]
+  [%expect {|
+    (Ok ((a b c) ())) |}]
 
 let%expect_test "string" =
   let open Let_syntax in
@@ -291,15 +297,15 @@ let%expect_test "choice: fail" =
   |> [%sexp_of: (string * Fragment.t list) Or_error.t] |> print_s;
   [%expect
     {|
-            (Ok
-             (match
-              (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-                (here <opaque>) (refers_to ())
-                (tags
-                 (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
-                   (refers_to ()) (tags ())))))
-               ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-                (here <opaque>) (refers_to ()) (tags ()))))) |}]
+    (Ok
+     (match
+      (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
+        (here <opaque>) (refers_to ())
+        (tags
+         (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
+           (refers_to ()) (tags ())))))
+       ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
+        (here <opaque>) (refers_to ()) (tags ()))))) |}]
 
 let%expect_test "repetitions: one or more (success)" =
   let parser = one_or_more any ~here:[%here] in
@@ -312,22 +318,19 @@ let%expect_test "repetitions: one or more (fail)" =
   let parser = one_or_more any ~here:[%here] in
   parse_complete parser ""
   |> [%sexp_of: (char list * Fragment.t list) Or_error.t] |> print_s;
-  [%expect {|
-    (Error ("parser failed" (info ()))) |}]
+  [%expect {| (Error ("parser failed" (info ()))) |}]
 
 let%expect_test "repetitions: zero or more (success)" =
   let parser = zero_or_more any ~here:[%here] in
   parse_complete parser "asdf"
   |> [%sexp_of: (char list * Fragment.t list) Or_error.t] |> print_s;
-  [%expect {|
-    (Ok ((a s d f) ())) |}]
+  [%expect {| (Ok ((a s d f) ())) |}]
 
 let%expect_test "repetitions: zero or more (empty)" =
   let parser = zero_or_more any ~here:[%here] in
   parse_complete parser ""
   |> [%sexp_of: (char list * Fragment.t list) Or_error.t] |> print_s;
-  [%expect {|
-    (Ok (() ())) |}]
+  [%expect {| (Ok (() ())) |}]
 
 let%expect_test "word" =
   let parser =
