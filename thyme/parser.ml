@@ -110,9 +110,6 @@ let sequential operations =
   in
   List.rev reversed
 
-(* Peek ahead and see if the parser matches
-
-   Never consumes *)
 let lookahead_matches parser =
   F
     (fun source pos ->
