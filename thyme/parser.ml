@@ -1,6 +1,11 @@
 open! Core
 open! Soil
 
+let refer_to source pos =
+  Reference.register
+    (ref (source, pos))
+    ~sexp_of:[%sexp_of: Source_file.t * Source_file.Position.t]
+
 module M = struct
   module Out = struct
     (**  A [Parser.t] when given a string outputs either 
@@ -50,20 +55,24 @@ module M = struct
 
   let parse_error error ~here =
     F
-      (fun _ _ ->
+      (fun source pos ->
         No_match
           [
             Fragment.init Error
               [%message "thyme->parse_failed" (error : Sexp.t)]
-              here;
+              here ~refers_to:(refer_to source pos);
           ])
 
   let tag (F parse) ~tag =
     F (fun source pos -> parse source pos |> Out.tag ~tag)
 
+  (* Note: the reference will refer to where the parser you added info to _stopped_ *)
   let add_info t ~frag =
     bind t ~f:(fun v ->
-        F (fun _source pos -> Match { next = pos; v; info = [ frag ] }))
+        F
+          (fun source pos ->
+            let frag = Fragment.add_ref frag (refer_to source pos) in
+            Match { next = pos; v; info = [ frag ] }))
 
   let map = `Define_using_bind
 end
@@ -87,7 +96,7 @@ let eof ~here =
             [
               Fragment.init Error
                 [%message "expected eof, got" (char : char)]
-                here;
+                here ~refers_to:(refer_to source pos);
             ]
       | None, next -> Match { next; v = (); info = [] })
 
@@ -109,13 +118,8 @@ let lookahead_matches parser =
     (fun source pos ->
       match run parser source pos with
       | Match { info; _ } ->
-          let info =
-            List.map info
-              ~f:
-                (Fragment.tag
-                   ~tag:
-                     (Fragment.init Info [%message "thyme->lookahead"] [%here]))
-          in
+          let tag = Fragment.init Info [%message "thyme->lookahead"] [%here] in
+          let info = List.map info ~f:(Fragment.tag ~tag) in
           Match { next = pos; v = true; info }
       (* Ignore the extra info on no_match? *)
       | No_match _info -> Match { next = pos; v = false; info = [] })
@@ -226,7 +230,13 @@ let%expect_test "eof" =
     {|
   (No_match
    (((label ()) (kind Error) (message ("expected eof, got" (char a)))
-     (here <opaque>) (refers_to ()) (tags ())))) |}]
+     (here <opaque>)
+     (refers_to
+      ((((ref_id 0)
+         (value
+          (((source dummy) (file_by_line <opaque>))
+           (Valid (line_num 0) (pos_in_line 0))))))))
+     (tags ())))) |}]
 
 let%expect_test "eof" =
   let source = Source_file.of_file_contents "" in
@@ -263,7 +273,10 @@ let%expect_test "string" =
     (Ok
      ((success (parsed nyaa))
       (((label ()) (kind Debug) (message (thyme->exact_string (expected nyaa)))
-        (here <opaque>) (refers_to ()) (tags ()))))) |}]
+        (here <opaque>)
+        (refers_to
+         ((((ref_id 1) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+        (tags ()))))) |}]
 
 let%expect_test "choice: fail" =
   let here = [%here] in
@@ -280,7 +293,13 @@ let%expect_test "choice: fail" =
          (((label ()) (kind Error)
            (message
             (thyme->parse_failed (error "thyme->choice: No choices match")))
-           (here <opaque>) (refers_to ()) (tags ())))))) |}]
+           (here <opaque>)
+           (refers_to
+            ((((ref_id 4)
+               (value
+                (((source dummy) (file_by_line <opaque>))
+                 (Valid (line_num 0) (pos_in_line 0))))))))
+           (tags ())))))) |}]
 
 let%expect_test "choice: fail" =
   let here = [%here] in
@@ -300,12 +319,17 @@ let%expect_test "choice: fail" =
     (Ok
      (match
       (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-        (here <opaque>) (refers_to ())
+        (here <opaque>)
+        (refers_to
+         ((((ref_id 5) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
         (tags
          (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
            (refers_to ()) (tags ())))))
        ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-        (here <opaque>) (refers_to ()) (tags ()))))) |}]
+        (here <opaque>)
+        (refers_to
+         ((((ref_id 6) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+        (tags ()))))) |}]
 
 let%expect_test "repetitions: one or more (success)" =
   let parser = one_or_more any ~here:[%here] in
@@ -353,9 +377,15 @@ let%expect_test "word" =
     (Ok
      (((first first_word) (second second_word))
       (((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
-        (refers_to ())
+        (refers_to
+         ((((ref_id 17)
+            (value
+             (((source dummy) (file_by_line <opaque>))
+              (Valid (line_num 0) (pos_in_line 10))))))))
         (tags
          (((label (parser->first-word-in-pair)) (kind Debug) (message ())
            (here <opaque>) (refers_to ()) (tags ())))))
        ((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
-        (refers_to ()) (tags ()))))) |}]
+        (refers_to
+         ((((ref_id 31) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+        (tags ()))))) |}]

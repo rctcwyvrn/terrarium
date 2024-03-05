@@ -17,3 +17,4 @@ val init :
   t
 
 val tag : t -> tag:t -> t
+val add_ref : t -> Reference.t -> t
