@@ -1,7 +1,12 @@
 open! Core
 
 module Position : sig
-  type t = Valid of { line_num : int; pos_in_line : int } | Eof
+  type t =
+    | Valid of
+        { line_num : int
+        ; pos_in_line : int
+        }
+    | Eof
   [@@deriving sexp_of]
 end
 
