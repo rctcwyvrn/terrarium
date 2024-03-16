@@ -52,5 +52,10 @@ val any_word : here:Lexing.position -> string t
 
 (* fixme-soon: this should probably take a file_path *)
 
+(** fetch parsing info *)
+val with_position_before_and_after
+  :  'a t
+  -> ('a * Source_file.Position.t * Source_file.Position.t) t
+
 (** Parse a string completely *)
-val parse_complete : 'a t -> string -> ('a * Fragment.t list, Error.t) result
+val parse_complete : 'a t -> string -> ('a, Error.t) result * Fragment.t list

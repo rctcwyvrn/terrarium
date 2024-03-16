@@ -38,15 +38,16 @@ let read_one t ~from:pos =
 
 let of_file_contents ?source s =
   let lines = String.split_on_chars s ~on:[ '\n' ] in
+  let nonempty_lines = List.filter ~f:(fun xs -> not (String.is_empty xs)) lines in
   let file_by_line =
-    List.map lines ~f:(Fn.compose Array.of_list String.to_list) |> Array.of_list
+    List.map nonempty_lines ~f:(Fn.compose Array.of_list String.to_list) |> Array.of_list
   in
   let source = Option.value source ~default:(File_path.of_string "dummy") in
   { source; file_by_line }
 ;;
 
 let start_of_file { file_by_line; _ } =
-  if Array.length file_by_line = 1 && Array.is_empty (Array.get file_by_line 0)
+  if Array.length file_by_line = 0
   then Position.Eof
   else Valid { line_num = 0; pos_in_line = 0 }
 ;;

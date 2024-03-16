@@ -38,6 +38,7 @@ module M = struct
       (fun source position ->
         match parse source position with
         | Match { next; v; info } ->
+          (* print_s [%message (info : Fragment.t list)]; *)
           (match run (f v) source next with
            | Match { next; v; info = new_info } ->
              Match { next; v; info = info @ new_info }
@@ -223,19 +224,33 @@ let any_word ~here =
   |> add_info ~frag:(Fragment.init Debug [%message "thyme->any_word"] here)
 ;;
 
+let with_position_before_and_after parser =
+  F
+    (fun source start_pos ->
+      match run parser source start_pos with
+      | Match { next; v; info } -> Match { next; v = v, start_pos, next; info }
+      (* Drop all state from stepping forward *)
+      | No_match info -> No_match info)
+;;
+
 let parse_complete parser s =
   let source = Source_file.of_file_contents s in
   let pos = Source_file.start_of_file source in
   match run parser source pos with
-  | Match { next = Source_file.Position.Eof; v; info } -> Ok (v, info)
+  | Match { next = Source_file.Position.Eof; v; info } -> Ok v, info
   | Match { next = ended_at; v = _; info } ->
-    error_s
-      [%message
-        "did not finish parsing input"
-          (ended_at : Source_file.Position.t)
-          (info : Fragment.t list)]
-  | No_match info -> error_s [%message "parser failed" (info : Fragment.t list)]
+    ( Error
+        (Error.create_s
+           [%message
+             "did not finish parsing input"
+               (ended_at : Source_file.Position.t)
+               (info : Fragment.t list)])
+    , info )
+  | No_match info ->
+    Error (Error.create_s [%message "parser failed" (info : Fragment.t list)]), info
 ;;
+
+type 'a parse_result = 'a Or_error.t * Fragment.t list [@@deriving sexp_of]
 
 let%expect_test "any" =
   let source = Source_file.of_file_contents "asdf" in
@@ -279,11 +294,9 @@ let%expect_test "combined" =
     let%bind () = eof ~here:[%here] in
     return (first, second, third)
   in
-  parse_complete parser "abc"
-  |> [%sexp_of: ((char * char * char) * Fragment.t list) Or_error.t]
-  |> print_s;
+  parse_complete parser "abc" |> [%sexp_of: (char * char * char) parse_result] |> print_s;
   [%expect {|
-    (Ok ((a b c) ())) |}]
+    ((Ok (a b c)) ()) |}]
 ;;
 
 let%expect_test "string" =
@@ -293,102 +306,95 @@ let%expect_test "string" =
     let%map () = eof ~here:[%here] in
     [%message "success" (parsed : string)]
   in
-  parse_complete parser "nyaa"
-  |> [%sexp_of: (Sexp.t * Fragment.t list) Or_error.t]
-  |> print_s;
+  parse_complete parser "nyaa" |> [%sexp_of: Sexp.t parse_result] |> print_s;
   [%expect
     {|
-    (Ok
-     ((success (parsed nyaa))
-      (((label ()) (kind Debug) (message (thyme->exact_string (expected nyaa)))
-        (here <opaque>)
-        (refers_to
-         ((((ref_id 1) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
-        (tags ()))))) |}]
+    ((Ok (success (parsed nyaa)))
+     (((label ()) (kind Debug) (message (thyme->exact_string (expected nyaa)))
+       (here <opaque>)
+       (refers_to
+        ((((ref_id 1) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+       (tags ())))) |}]
 ;;
 
 let%expect_test "choice: fail" =
   let here = [%here] in
   let parser = choice [ exact_string "not" ~here; exact_string "right" ~here ] ~here in
-  parse_complete parser "different"
-  |> [%sexp_of: (string * Fragment.t list) Or_error.t]
-  |> print_s;
+  parse_complete parser "different" |> [%sexp_of: string parse_result] |> print_s;
   [%expect
     {|
-      (Error
-       ("parser failed"
-        (info
-         (((label ()) (kind Error)
-           (message
-            (thyme->parse_failed (error "thyme->choice: No choices match")))
-           (here <opaque>)
-           (refers_to
-            ((((ref_id 4)
-               (value
-                (((source dummy) (file_by_line <opaque>))
-                 (Valid (line_num 0) (pos_in_line 0))))))))
-           (tags ())))))) |}]
+      ((Error
+        ("parser failed"
+         (info
+          (((label ()) (kind Error)
+            (message
+             (thyme->parse_failed (error "thyme->choice: No choices match")))
+            (here <opaque>)
+            (refers_to
+             ((((ref_id 4)
+                (value
+                 (((source dummy) (file_by_line <opaque>))
+                  (Valid (line_num 0) (pos_in_line 0))))))))
+            (tags ()))))))
+       (((label ()) (kind Error)
+         (message (thyme->parse_failed (error "thyme->choice: No choices match")))
+         (here <opaque>)
+         (refers_to
+          ((((ref_id 4)
+             (value
+              (((source dummy) (file_by_line <opaque>))
+               (Valid (line_num 0) (pos_in_line 0))))))))
+         (tags ())))) |}]
 ;;
 
-let%expect_test "choice: fail" =
+let%expect_test "choice: match" =
   let here = [%here] in
   let parser =
     choice
       [ exact_string "match" ~here; exact_string "not" ~here; exact_string "right" ~here ]
       ~here
   in
-  parse_complete parser "match"
-  |> [%sexp_of: (string * Fragment.t list) Or_error.t]
-  |> print_s;
+  parse_complete parser "match" |> [%sexp_of: string parse_result] |> print_s;
   [%expect
     {|
-    (Ok
-     (match
-      (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-        (here <opaque>)
-        (refers_to
-         ((((ref_id 5) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
-        (tags
-         (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
-           (refers_to ()) (tags ())))))
-       ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-        (here <opaque>)
-        (refers_to
-         ((((ref_id 6) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
-        (tags ()))))) |}]
+    ((Ok match)
+     (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
+       (here <opaque>)
+       (refers_to
+        ((((ref_id 5) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+       (tags
+        (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
+          (refers_to ()) (tags ())))))
+      ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
+       (here <opaque>)
+       (refers_to
+        ((((ref_id 6) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+       (tags ())))) |}]
 ;;
 
 let%expect_test "repetitions: one or more (success)" =
   let parser = one_or_more any ~here:[%here] in
-  parse_complete parser "asdf"
-  |> [%sexp_of: (char list * Fragment.t list) Or_error.t]
-  |> print_s;
+  parse_complete parser "asdf" |> [%sexp_of: char list parse_result] |> print_s;
   [%expect {|
-    (Ok ((a s d f) ())) |}]
+    ((Ok (a s d f)) ()) |}]
 ;;
 
 let%expect_test "repetitions: one or more (fail)" =
   let parser = one_or_more any ~here:[%here] in
-  parse_complete parser ""
-  |> [%sexp_of: (char list * Fragment.t list) Or_error.t]
-  |> print_s;
-  [%expect {| (Error ("parser failed" (info ()))) |}]
+  parse_complete parser "" |> [%sexp_of: char list parse_result] |> print_s;
+  [%expect {| ((Error ("parser failed" (info ()))) ()) |}]
 ;;
 
 let%expect_test "repetitions: zero or more (success)" =
   let parser = zero_or_more any ~here:[%here] in
-  parse_complete parser "asdf"
-  |> [%sexp_of: (char list * Fragment.t list) Or_error.t]
-  |> print_s;
-  [%expect {| (Ok ((a s d f) ())) |}]
+  parse_complete parser "asdf" |> [%sexp_of: char list parse_result] |> print_s;
+  [%expect {| ((Ok (a s d f)) ()) |}]
 ;;
 
 let%expect_test "repetitions: zero or more (empty)" =
   let parser = zero_or_more any ~here:[%here] in
-  parse_complete parser ""
-  |> [%sexp_of: (char list * Fragment.t list) Or_error.t]
-  |> print_s;
-  [%expect {| (Ok (() ())) |}]
+  parse_complete parser "" |> [%sexp_of: char list parse_result] |> print_s;
+  [%expect {| ((Ok ()) ()) |}]
 ;;
 
 let%expect_test "word" =
@@ -405,23 +411,22 @@ let%expect_test "word" =
     return [%message (first : string) (second : string)]
   in
   parse_complete parser "first_word second_word"
-  |> [%sexp_of: (Sexp.t * Fragment.t list) Or_error.t]
+  |> [%sexp_of: Sexp.t parse_result]
   |> print_s;
   [%expect
     {|
-    (Ok
-     (((first first_word) (second second_word))
-      (((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
-        (refers_to
-         ((((ref_id 17)
-            (value
-             (((source dummy) (file_by_line <opaque>))
-              (Valid (line_num 0) (pos_in_line 10))))))))
-        (tags
-         (((label (parser->first-word-in-pair)) (kind Debug) (message ())
-           (here <opaque>) (refers_to ()) (tags ())))))
-       ((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
-        (refers_to
-         ((((ref_id 31) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
-        (tags ()))))) |}]
+    ((Ok ((first first_word) (second second_word)))
+     (((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
+       (refers_to
+        ((((ref_id 17)
+           (value
+            (((source dummy) (file_by_line <opaque>))
+             (Valid (line_num 0) (pos_in_line 10))))))))
+       (tags
+        (((label (parser->first-word-in-pair)) (kind Debug) (message ())
+          (here <opaque>) (refers_to ()) (tags ())))))
+      ((label ()) (kind Debug) (message thyme->any_word) (here <opaque>)
+       (refers_to
+        ((((ref_id 31) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
+       (tags ())))) |}]
 ;;
