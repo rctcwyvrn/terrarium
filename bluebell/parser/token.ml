@@ -7,6 +7,8 @@ module Keyword = struct
     | Else
     | Logical_and
     | Logical_or
+    | True
+    | False
     (* Match *)
     | Match
     | With
@@ -46,6 +48,7 @@ module Keyword = struct
     | Pipe
     | Dot
   [@@deriving enumerate, sexp_of, variants, equal]
+  (* fixme-soon: total map???? *)
 
   let lex =
     let open Thyme.Parser in
@@ -62,6 +65,8 @@ module Keyword = struct
       ; s "else" |> into Else
       ; s "&&" |> into Logical_and
       ; s "||" |> into Logical_or
+      ; s "true" |> into True
+      ; s "false" |> into False
       ; s "match" |> into Match
       ; s "with" |> into With
       ; s "let" |> into Let

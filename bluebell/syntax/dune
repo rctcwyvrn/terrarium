@@ -1,0 +1,6 @@
+(library
+ (name bluebell_syntax)
+ (libraries core async soil)
+ (inline_tests)
+ (preprocess
+  (pps ppx_jane)))

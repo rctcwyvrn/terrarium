@@ -12,6 +12,8 @@ module Keyword : sig
     | Else
     | Logical_and
     | Logical_or
+    | True
+    | False
     (* Match *)
     | Match
     | With

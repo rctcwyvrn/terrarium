@@ -1,6 +1,6 @@
 (library
  (name bluebell_parser)
- (libraries core async file_path thyme)
+ (libraries core async file_path thyme bluebell_syntax)
  (inline_tests)
  (preprocess
   (pps ppx_jane)))
