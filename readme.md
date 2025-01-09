@@ -1,9 +1,9 @@
 # Terrarium 
 
-A dumb little compiler project, a collection of cute flowers
+A dumb little compiler project, a collection of cute flowers and trees
 
 ### What?
-It's a compiler from a subset of ocaml to ocaml lambda IR and riscv and maybe some other things
+It's a compiler from a subset of ocaml to riscv 
 
 ### General mindset
 
@@ -14,6 +14,5 @@ Make a highly understandable and debuggable compiler
 ### Goals
 - Write a CPS compiler
 - Write/use a monadic parser
-- Experiment with memory management
+- Experiment with memory management (ASAP memory management experiments)
 - Implement a basic build system + linker 
-- Lots of other things
