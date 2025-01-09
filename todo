@@ -1,0 +1,23 @@
+# 2025 project
+
+one line of code a day
+
+1. decide on a surface language
+- read up on SML and ocaml grammar, decide on what to use
+
+2. write an interpreter for the surface language
+- write a basic interpreter with just functions and trivs and primfs
+- add conditionals
+- add let binding
+- add record data
+- add sumtype data
+- add closures
+- add modules
+
+3. parse the surface language
+
+4. typecheck 
+
+5. compile with continuations
+
+6. backend 

@@ -1,6 +1,0 @@
-(library
- (name bluebell)
- (libraries core async file_path)
- (inline_tests)
- (preprocess
-  (pps ppx_jane)))

@@ -1,6 +1,0 @@
-(executable
- (public_name bluebell_main)
- (name main)
- (libraries core core_unix.command_unix bluebell)
- (preprocess
-  (pps ppx_jane)))
