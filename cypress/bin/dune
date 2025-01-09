@@ -1,0 +1,6 @@
+(executable
+ (public_name cypress_main)
+ (name main)
+ (libraries core core_unix.command_unix cypress)
+ (preprocess
+  (pps ppx_jane)))
