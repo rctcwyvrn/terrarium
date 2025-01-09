@@ -183,10 +183,7 @@ let bluebell_lexer =
   Parser.one_or_more token ~here >>| List.concat
 ;;
 
-let lex input =
-  let result = Parser.parse_complete bluebell_lexer input in
-  result
-;;
+let lex input = Parser.parse_complete bluebell_lexer input
 
 let%expect_test "nyaa" =
   let input =
@@ -200,6 +197,9 @@ let%expect_test "nyaa" =
     ;;
 
     let y_coord = fun t -> t.y
+    ;;
+
+    let coord_name = "my name"
     ;;
   end
   |}
@@ -223,6 +223,6 @@ let%expect_test "nyaa" =
       (Keyword Equal) (Ident t) (Keyword Dot) (Ident x) (Keyword DoubleSemicolon)
       (Keyword Let) (Ident y_coord) (Keyword Equal) (Keyword Fun) (Ident t)
       (Keyword Arrow_right) (Ident t) (Keyword Dot) (Ident y)
-      (Keyword DoubleSemicolon) (Keyword End))) |}]
+      (Keyword DoubleSemicolon) (Keyword Let) (Ident coord_name) (Keyword Equal)
+      (String "my name") (Keyword DoubleSemicolon) (Keyword End))) |}]
 ;;
-(* print_s [%message (lex input : Token.t list Or_error.t * Fragment.t list)]; *)
