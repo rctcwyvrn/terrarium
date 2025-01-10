@@ -15,6 +15,12 @@ end = struct
   type t = string
 end
 
+and Field_name : sig
+  type t = string
+end = struct
+  type t = string
+end
+
 and Identifier : sig
   type t = string
 end = struct
@@ -45,19 +51,166 @@ end
 (* Impl types *)
 
 (* Exprs *)
+(* fixme-someday lilin: do we need to expose module paths here? *)
+and Field : sig
+  type t = Field_name.t
+end = struct
+  type t = Field_name.t
+end
+
 and Pattern : sig
+  (* fixme *)
   type t
 end = struct
   type t
+end
+
+and Record_def : sig
+  type t =
+    { field : Field.t
+    ; equals : Expr.t
+    }
+end = struct
+  type t =
+    { field : Field.t
+    ; equals : Expr.t
+    }
+end
+
+and Pattern_matching : sig
+  type arm =
+    { pattern : Pattern.t
+    ; when_ : Expr.t option
+    ; expr : Expr.t
+    }
+
+  type t = arm list
+end = struct
+  type arm =
+    { pattern : Pattern.t
+    ; when_ : Expr.t option
+    ; expr : Expr.t
+    }
+
+  type t = arm list
+end
+
+and Constant : sig
+  type t =
+    | Int of int
+    | String of string
+    | True
+    | False
+    | Unit
+end = struct
+  type t =
+    | Int of int
+    | String of string
+    | True
+    | False
+    | Unit
+end
+
+and Infix : sig
+  type t =
+    | Add
+    | Sub
+    | Mult
+    | And
+    | Or
+end = struct
+  type t =
+    | Add
+    | Sub
+    | Mult
+    | And
+    | Or
 end
 
 and Expr : sig
-  type t
+  (* This type is where the most corners are cut
+
+     Hopefully I'm not cutting out anything critical *)
+  type t =
+    | Path of
+        { modules : Module_name.t list
+        ; value : Value_name.t
+        }
+    | Constant of Constant.t
+    | Group of t
+    | Cons of
+        { hd : t
+        ; tail : t
+        }
+    | Record of Record_def.t list
+    | Application of
+        { f : t
+        ; args : t list (* fixme-someday: labelled arguments, optional arguments *)
+        }
+    | Infix of
+        { op : Infix.t
+        ; l : t
+        ; r : t
+        }
+    | If of
+        { pred : t
+        ; then_ : t
+        ; else_ : t option
+        }
+    | Sequence of t * t
+    | Match of t * Pattern_matching.t
+    | Fun of
+        { params : Pattern.t list
+            (* fixme-someday: labelled arguments, optional arguments *)
+        ; body : t
+        }
+    | Let_expr of
+        { is_rec : bool
+        ; binding : Let_binding.t
+        ; others : Let_binding.t list
+        }
 end = struct
-  type t
+  type t =
+    | Path of
+        { modules : Module_name.t list
+        ; value : Value_name.t
+        }
+    | Constant of Constant.t
+    | Group of t
+    | Cons of
+        { hd : t
+        ; tail : t
+        }
+    | Record of Record_def.t list
+    | Application of
+        { f : t (* fixme-someday: labelled arguments *)
+        ; args : t list
+        }
+    | Infix of
+        { op : Infix.t
+        ; l : t
+        ; r : t
+        }
+    | If of
+        { pred : t
+        ; then_ : t
+        ; else_ : t option
+        }
+    | Sequence of t * t
+    | Match of t * Pattern_matching.t
+    | Fun of
+        { params : Pattern.t list
+        ; body : t
+        }
+    | Let_expr of
+        { is_rec : bool
+        ; binding : Let_binding.t
+        ; others : Let_binding.t list
+        }
 end
 
 and Module_expr : sig
+  (* fixme *)
   type t
 end = struct
   type t
