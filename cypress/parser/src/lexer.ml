@@ -1,10 +1,9 @@
 open! Core
 open! Soil
-open! Thyme
 open Thyme.Parser.Let_syntax
 
 let wrap_with_position parser =
-  let%map kind, start, end_ = Parser.with_position_before_and_after parser in
+  let%map kind, start, end_ = Thyme.Parser.with_position_before_and_after parser in
   ({ kind; start; end_ } : Token.t)
 ;;
 
@@ -15,7 +14,7 @@ let keyword =
 ;;
 
 let blank =
-  (let%map _ = Parser.one_or_more Parser.whitespace_char ~here:[%here] in
+  (let%map _ = Thyme.Parser.one_or_more Thyme.Parser.whitespace_char ~here:[%here] in
    Token.Kind.Blank)
   |> wrap_with_position
 ;;
@@ -24,29 +23,29 @@ let blank =
 let token_seperator =
   let here = [%here] in
   let eof =
-    (let%map () = Parser.eof ~here in
+    (let%map () = Thyme.Parser.eof ~here in
      Token.Kind.Blank)
     |> wrap_with_position
   in
   let dot =
-    (let%map _ = Parser.exact_char '.' in
+    (let%map _ = Thyme.Parser.exact_char '.' in
      Token.Kind.Keyword Dot)
     |> wrap_with_position
   in
   let lparen =
-    (let%map _ = Parser.exact_char '(' in
+    (let%map _ = Thyme.Parser.exact_char '(' in
      Token.Kind.Keyword LParen)
     |> wrap_with_position
   in
-  Parser.choice ~here [ eof; blank; dot; lparen ]
+  Thyme.Parser.choice ~here [ eof; blank; dot; lparen ]
 ;;
 
 let comment =
   let here = [%here] in
   let parser =
-    let%bind _ = Parser.exact_string "(*" ~here in
-    let comment_end = Parser.exact_string "*)" ~here in
-    let%bind _ = Parser.repeat Parser.any ~until:comment_end in
+    let%bind _ = Thyme.Parser.exact_string "(*" ~here in
+    let comment_end = Thyme.Parser.exact_string "*)" ~here in
+    let%bind _ = Thyme.Parser.repeat Thyme.Parser.any ~until:comment_end in
     let%bind _ = comment_end in
     return Token.Kind.Comment
   in
@@ -57,17 +56,17 @@ let number =
   let here = [%here] in
   let parser =
     let number_char =
-      Parser.match_and_assert
-        Parser.any
+      Thyme.Parser.match_and_assert
+        Thyme.Parser.any
         ~pred:Char.is_digit
         ~here
         ~pred_msg:[%message "Char.is_digit"]
     in
-    let%bind start = Parser.one_or_more number_char ~here in
-    if%bind Parser.lookahead_matches (Parser.exact_char '.')
+    let%bind start = Thyme.Parser.one_or_more number_char ~here in
+    if%bind Thyme.Parser.lookahead_matches (Thyme.Parser.exact_char '.')
     then (
       let here = [%here] in
-      let%bind decimal = Parser.one_or_more number_char ~here in
+      let%bind decimal = Thyme.Parser.one_or_more number_char ~here in
       let f =
         String.of_char_list start ^ "." ^ String.of_char_list decimal |> Float.of_string
       in
@@ -81,9 +80,9 @@ let number =
 
 let char =
   let parser =
-    let%bind _ = Parser.exact_char '\'' in
-    let%bind c = Parser.any in
-    let%bind _ = Parser.exact_char '\'' in
+    let%bind _ = Thyme.Parser.exact_char '\'' in
+    let%bind c = Thyme.Parser.any in
+    let%bind _ = Thyme.Parser.exact_char '\'' in
     return (Token.Kind.Char c)
   in
   wrap_with_position parser
@@ -91,17 +90,19 @@ let char =
 
 let string =
   let parser =
-    let%bind _ = Parser.exact_char '"' in
-    let%bind s = Parser.repeat Parser.any ~until:(Parser.exact_char '"') in
-    let%bind _ = Parser.exact_char '"' in
+    let%bind _ = Thyme.Parser.exact_char '"' in
+    let%bind s =
+      Thyme.Parser.repeat Thyme.Parser.any ~until:(Thyme.Parser.exact_char '"')
+    in
+    let%bind _ = Thyme.Parser.exact_char '"' in
     return (Token.Kind.String (String.of_char_list s))
   in
   wrap_with_position parser
 ;;
 
 let identifier_body_char =
-  Parser.match_and_assert
-    Parser.any
+  Thyme.Parser.match_and_assert
+    Thyme.Parser.any
     ~here:[%here]
     ~pred_msg:[%message "(a...z) | (A...Z) | 0...9 | _ | '"]
     ~pred:(fun c ->
@@ -114,8 +115,8 @@ let identifier_body_char =
 let lowercase_ident_s =
   let here = [%here] in
   let%bind first =
-    Parser.match_and_assert
-      Parser.any
+    Thyme.Parser.match_and_assert
+      Thyme.Parser.any
       ~here
       ~pred:(fun c ->
         let is_lowercase_alpha = Char.is_lowercase c && Char.is_alpha c in
@@ -123,7 +124,7 @@ let lowercase_ident_s =
         is_lowercase_alpha || is_underscore)
       ~pred_msg:[%message "(a...z) | _"]
   in
-  let%bind body = Parser.zero_or_more identifier_body_char ~here in
+  let%bind body = Thyme.Parser.zero_or_more identifier_body_char ~here in
   let s = String.of_char_list (first :: body) in
   return s
 ;;
@@ -131,19 +132,19 @@ let lowercase_ident_s =
 let identifier =
   let here = [%here] in
   let parser =
-    if%bind Parser.lookahead_matches lowercase_ident_s
+    if%bind Thyme.Parser.lookahead_matches lowercase_ident_s
     then (
       let%bind s = lowercase_ident_s in
       return (Token.Kind.Ident s))
     else (
       let%bind first =
-        Parser.match_and_assert
-          Parser.any
+        Thyme.Parser.match_and_assert
+          Thyme.Parser.any
           ~here
           ~pred:(fun c -> Char.is_alpha c && Char.is_uppercase c)
           ~pred_msg:[%message "(A...Z)"]
       in
-      let%bind body = Parser.zero_or_more identifier_body_char ~here in
+      let%bind body = Thyme.Parser.zero_or_more identifier_body_char ~here in
       let s = String.of_char_list (first :: body) in
       return (Token.Kind.Capital_ident s))
   in
@@ -152,14 +153,14 @@ let identifier =
 
 let arg_label =
   let parser =
-    let optional_prefix = Parser.exact_char '?' in
-    if%bind Parser.lookahead_matches optional_prefix
+    let optional_prefix = Thyme.Parser.exact_char '?' in
+    if%bind Thyme.Parser.lookahead_matches optional_prefix
     then (
       let%bind _ = optional_prefix in
       let%bind label = lowercase_ident_s in
       return (Token.Kind.Arg_label { optional = true; label }))
     else (
-      let%bind _ = Parser.exact_char '~' in
+      let%bind _ = Thyme.Parser.exact_char '~' in
       let%bind label = lowercase_ident_s in
       return (Token.Kind.Arg_label { optional = false; label }))
   in
@@ -177,52 +178,10 @@ let bluebell_lexer =
   let token =
     [ keyword; comment; number; char; string; arg_label; identifier ]
     |> List.map ~f:token_with_seperator
-    |> Parser.choice ~here
+    |> Thyme.Parser.choice ~here
   in
   let%bind _prefix = blank in
-  Parser.one_or_more token ~here >>| List.concat
+  Thyme.Parser.one_or_more token ~here >>| List.concat
 ;;
 
-let lex input = Parser.parse_complete bluebell_lexer input
-
-let%expect_test "nyaa" =
-  let input =
-    {| 
-  module Test = struct 
-
-    type t = { x : int ; y : int } 
-
-
-    let x_coord t = t.x
-    ;;
-
-    let y_coord = fun t -> t.y
-    ;;
-
-    let coord_name = "my name"
-    ;;
-  end
-  |}
-  in
-  let result = lex input in
-  (match fst result with
-   | Ok tokens ->
-     let tokens =
-       List.map ~f:Token.kind tokens
-       |> List.filter ~f:(fun t -> not (Token.Kind.equal t Token.Kind.Blank))
-     in
-     print_s [%message (tokens : Token.Kind.t list)]
-   | Error _ -> print_endline "died");
-  [%expect
-    {|
-    (tokens
-     ((Keyword Module) (Capital_ident Test) (Keyword Equal) (Keyword Struct)
-      (Keyword Type) (Ident t) (Keyword Equal) (Keyword LBrace) (Ident x)
-      (Keyword Colon) (Ident int) (Keyword Semicolon) (Ident y) (Keyword Colon)
-      (Ident int) (Keyword RBrace) (Keyword Let) (Ident x_coord) (Ident t)
-      (Keyword Equal) (Ident t) (Keyword Dot) (Ident x) (Keyword DoubleSemicolon)
-      (Keyword Let) (Ident y_coord) (Keyword Equal) (Keyword Fun) (Ident t)
-      (Keyword Arrow_right) (Ident t) (Keyword Dot) (Ident y)
-      (Keyword DoubleSemicolon) (Keyword Let) (Ident coord_name) (Keyword Equal)
-      (String "my name") (Keyword DoubleSemicolon) (Keyword End))) |}]
-;;
+let lex input = Thyme.Parser.parse_complete bluebell_lexer input

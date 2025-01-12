@@ -5,59 +5,77 @@ open! Soil
 
 module rec Module_name : sig
   type t = string
+  type t_with_report = t With_report.t
 end = struct
   type t = string
+  type t_with_report = t With_report.t
 end
 
 and Value_name : sig
   type t = string
+  type t_with_report = t With_report.t
 end = struct
   type t = string
+  type t_with_report = t With_report.t
 end
 
 and Field_name : sig
   type t = string
+  type t_with_report = t With_report.t
 end = struct
   type t = string
+  type t_with_report = t With_report.t
 end
 
 and Identifier : sig
   type t = string
+  type t_with_report = t With_report.t
 end = struct
   type t = string
+  type t_with_report = t With_report.t
 end
 
 and Constructor : sig
   type t =
-    { path : Module_name.t list
+    { path : Module_name.t_with_report list
     ; name : string
     }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    { path : Module_name.t list
+    { path : Module_name.t_with_report list
     ; name : string
     }
+
+  type t_with_report = t With_report.t
 end
 
 (* fixme-someday: unique identifiable types for these things that just end up as strings *)
 
 (* Types *)
 and Ty_expr : sig
-  type t = Identifier.t
+  type t = Identifier.t_with_report
+  type t_with_report = t With_report.t
 end = struct
-  type t = Identifier.t
+  type t = Identifier.t_with_report
+  type t_with_report = t With_report.t
 end
 
 and Val : sig
   type t =
-    { name : Value_name.t
-    ; ty_expr : Ty_expr.t
+    { name : Value_name.t_with_report
+    ; ty_expr : Ty_expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    { name : Value_name.t
-    ; ty_expr : Ty_expr.t
+    { name : Value_name.t_with_report
+    ; ty_expr : Ty_expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end
 
 (* Impl types *)
@@ -65,77 +83,93 @@ end
 (* Exprs *)
 (* fixme-someday lilin: do we need to expose module paths here? *)
 and Field : sig
-  type t = Field_name.t
+  type t = Field_name.t_with_report
+  type t_with_report = t With_report.t
 end = struct
-  type t = Field_name.t
+  type t = Field_name.t_with_report
+  type t_with_report = t With_report.t
 end
 
 and Pattern : sig
   module Record_pattern_item : sig
     type t =
-      { field : Field.t
-      ; equals : Pattern.t
+      { field : Field.t_with_report
+      ; equals : Pattern.t_with_report
       }
+
+    type t_with_report = t With_report.t
   end
 
   type t =
-    | Binding of Value_name.t
-    | Constant of Constant.t
+    | Binding of Value_name.t_with_report
+    | Constant of Constant.t_with_report
     | Cons of
-        { hd : t
-        ; rest : t
+        { hd : Pattern.t_with_report
+        ; rest : Pattern.t_with_report
         }
-    | Constructor of Constructor.t
-    | Record of Record_pattern_item.t list
+    | Constructor of Constructor.t_with_report
+    | Record of Record_pattern_item.t_with_report list
     | Catchall
+
+  type t_with_report = t With_report.t
 end = struct
   module Record_pattern_item = struct
     type t =
-      { field : Field.t
-      ; equals : Pattern.t
+      { field : Field.t_with_report
+      ; equals : Pattern.t_with_report
       }
+
+    type t_with_report = t With_report.t
   end
 
   type t =
-    | Binding of Value_name.t
-    | Constant of Constant.t
+    | Binding of Value_name.t_with_report
+    | Constant of Constant.t_with_report
     | Cons of
-        { hd : t
-        ; rest : t
+        { hd : Pattern.t_with_report
+        ; rest : Pattern.t_with_report
         }
-    | Constructor of Constructor.t
-    | Record of Record_pattern_item.t list
+    | Constructor of Constructor.t_with_report
+    | Record of Record_pattern_item.t_with_report list
     | Catchall
+
+  type t_with_report = t With_report.t
 end
 
 and Record_def : sig
   type t =
-    { field : Field.t
-    ; equals : Expr.t
+    { field : Field.t_with_report
+    ; equals : Expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    { field : Field.t
-    ; equals : Expr.t
+    { field : Field.t_with_report
+    ; equals : Expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end
 
 and Pattern_matching : sig
   type arm =
-    { pattern : Pattern.t
-    ; when_ : Expr.t option
-    ; expr : Expr.t
+    { pattern : Pattern.t_with_report
+    ; when_ : Expr.t_with_report option
+    ; expr : Expr.t_with_report
     }
 
   type t = arm list
+  type t_with_report = t With_report.t
 end = struct
   type arm =
-    { pattern : Pattern.t
-    ; when_ : Expr.t option
-    ; expr : Expr.t
+    { pattern : Pattern.t_with_report
+    ; when_ : Expr.t_with_report option
+    ; expr : Expr.t_with_report
     }
 
   type t = arm list
+  type t_with_report = t With_report.t
 end
 
 and Constant : sig
@@ -145,6 +179,8 @@ and Constant : sig
     | True
     | False
     | Unit
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
     | Int of int
@@ -152,6 +188,8 @@ end = struct
     | True
     | False
     | Unit
+
+  type t_with_report = t With_report.t
 end
 
 and Infix : sig
@@ -161,6 +199,8 @@ and Infix : sig
     | Mult
     | And
     | Or
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
     | Add
@@ -168,6 +208,8 @@ end = struct
     | Mult
     | And
     | Or
+
+  type t_with_report = t With_report.t
 end
 
 and Expr : sig
@@ -176,218 +218,247 @@ and Expr : sig
      Hopefully I'm not cutting out anything critical *)
   type t =
     | Path of
-        { modules : Module_name.t list
-        ; value : Value_name.t
+        { modules : Module_name.t_with_report list
+        ; value : Value_name.t_with_report
         }
-    | Constant of Constant.t
-    | Group of t
+    | Constant of Constant.t_with_report
+    | Group of Expr.t_with_report
     | Cons of
-        { hd : t
-        ; tail : t
+        { hd : Expr.t_with_report
+        ; tail : Expr.t_with_report
         }
-    | Record of Record_def.t list
+    | Record of Record_def.t_with_report list
     | Application of
-        { f : t
-        ; args : t list (* fixme-someday: labelled arguments, optional arguments *)
+        { f : Expr.t_with_report
+        ; args : Expr.t_with_report list
+        (* fixme-someday: labelled arguments, optional arguments *)
         }
     | Infix of
-        { op : Infix.t
-        ; l : t
-        ; r : t
+        { op : Infix.t_with_report
+        ; l : Expr.t_with_report
+        ; r : Expr.t_with_report
         }
     | If of
-        { pred : t
-        ; then_ : t
-        ; else_ : t option
+        { pred : Expr.t_with_report
+        ; then_ : Expr.t_with_report
+        ; else_ : Expr.t_with_report option
         }
-    | Sequence of t * t
-    | Match of t * Pattern_matching.t
+    | Sequence of Expr.t_with_report * Expr.t_with_report
+    | Match of Expr.t_with_report * Pattern_matching.t_with_report
     | Fun of
-        { params : Pattern.t list
+        { params : Pattern.t_with_report list
             (* fixme-someday: labelled arguments, optional arguments *)
-        ; body : t
+        ; body : Expr.t_with_report
         }
     | Let_expr of
         { is_rec : bool
-        ; binding : Let_binding.t
-        ; others : Let_binding.t list
+        ; binding : Let_binding.t_with_report
+        ; others : Let_binding.t_with_report list
         }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
     | Path of
-        { modules : Module_name.t list
-        ; value : Value_name.t
+        { modules : Module_name.t_with_report list
+        ; value : Value_name.t_with_report
         }
-    | Constant of Constant.t
-    | Group of t
+    | Constant of Constant.t_with_report
+    | Group of Expr.t_with_report
     | Cons of
-        { hd : t
-        ; tail : t
+        { hd : Expr.t_with_report
+        ; tail : Expr.t_with_report
         }
-    | Record of Record_def.t list
+    | Record of Record_def.t_with_report list
     | Application of
-        { f : t (* fixme-someday: labelled arguments *)
-        ; args : t list
+        { f : Expr.t_with_report (* fixme-someday: labelled arguments *)
+        ; args : Expr.t_with_report list
         }
     | Infix of
-        { op : Infix.t
-        ; l : t
-        ; r : t
+        { op : Infix.t_with_report
+        ; l : Expr.t_with_report
+        ; r : Expr.t_with_report
         }
     | If of
-        { pred : t
-        ; then_ : t
-        ; else_ : t option
+        { pred : Expr.t_with_report
+        ; then_ : Expr.t_with_report
+        ; else_ : Expr.t_with_report option
         }
-    | Sequence of t * t
-    | Match of t * Pattern_matching.t
+    | Sequence of Expr.t_with_report * Expr.t_with_report
+    | Match of Expr.t_with_report * Pattern_matching.t_with_report
     | Fun of
-        { params : Pattern.t list
-        ; body : t
+        { params : Pattern.t_with_report list
+        ; body : Expr.t_with_report
         }
     | Let_expr of
         { is_rec : bool
-        ; binding : Let_binding.t
-        ; others : Let_binding.t list
+        ; binding : Let_binding.t_with_report
+        ; others : Let_binding.t_with_report list
         }
+
+  type t_with_report = t With_report.t
 end
 
 and Module_expr : sig
   type t =
-    | Struct of Module_impl.t
+    | Struct of Module_impl.t_with_report
     | Functor of
-        { arg_name : Module_name.t
-        ; arg_type : Module_interface.module_type
-        ; expr : t
+        { arg_name : Module_name.t_with_report
+        ; arg_type : Module_interface.module_type_with_report
+        ; expr : Module_expr.t_with_report
         }
     | App of
-        { f : t
-        ; arg : t
+        { f : Module_expr.t_with_report
+        ; arg : Module_expr.t_with_report
         }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    | Struct of Module_impl.t
+    | Struct of Module_impl.t_with_report
     | Functor of
-        { arg_name : Module_name.t
-        ; arg_type : Module_interface.module_type
-        ; expr : t
+        { arg_name : Module_name.t_with_report
+        ; arg_type : Module_interface.module_type_with_report
+        ; expr : Module_expr.t_with_report
         }
     | App of
-        { f : t
-        ; arg : t
+        { f : Module_expr.t_with_report
+        ; arg : Module_expr.t_with_report
         }
+
+  type t_with_report = t With_report.t
 end
 
 (* defns *)
 and Let_binding : sig
   type t =
-    { pattern : Pattern.t
-    ; expr : Expr.t
+    { pattern : Pattern.t_with_report
+    ; expr : Expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    { pattern : Pattern.t
-    ; expr : Expr.t
+    { pattern : Pattern.t_with_report
+    ; expr : Expr.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end
 
 and Definition : sig
   type t =
     | Let of
         { is_rec : bool
-        ; binding : Let_binding.t
-        ; others : Let_binding.t list
+        ; binding : Let_binding.t_with_report
+        ; others : Let_binding.t_with_report list
         }
     | Module of
-        { name : Module_name.t
-        ; ty : Module_interface.module_type
-        ; expr : Module_expr.t
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
+        ; expr : Module_expr.t_with_report
         }
     | Module_type of
-        { name : Module_name.t
-        ; ty : Module_interface.module_type
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
         }
-    | Open of Module_name.t list
-    | Include of Module_expr.t
+    | Open of Module_name.t_with_report list
+    | Include of Module_expr.t_with_report
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
     | Let of
         { is_rec : bool
-        ; binding : Let_binding.t
-        ; others : Let_binding.t list
+        ; binding : Let_binding.t_with_report
+        ; others : Let_binding.t_with_report list
         }
     | Module of
-        { name : Module_name.t
-        ; ty : Module_interface.module_type
-        ; expr : Module_expr.t
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
+        ; expr : Module_expr.t_with_report
         }
     | Module_type of
-        { name : Module_name.t
-        ; ty : Module_interface.module_type
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
         }
-    | Open of Module_name.t list
-    | Include of Module_expr.t
+    | Open of Module_name.t_with_report list
+    | Include of Module_expr.t_with_report
+
+  type t_with_report = t With_report.t
 end
 
 and Module_impl : sig
   type item =
-    | Def of Definition.t
-    | Expr of Expr.t
+    | Def of Definition.t_with_report
+    | Expr of Expr.t_with_report
 
   type t = item list
+  type t_with_report = t With_report.t
 end = struct
   type item =
-    | Def of Definition.t
-    | Expr of Expr.t
+    | Def of Definition.t_with_report
+    | Expr of Expr.t_with_report
 
   type t = item list
+  type t_with_report = t With_report.t
 end
 
 (* Modules *)
 and Module_interface : sig
   type specification =
-    | Val of Val.t
+    | Val of Val.t_with_report
     | Module of
-        { name : Module_name.t
-        ; ty : module_type
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
         }
-    | Open of Module_name.t
-    | Include of Module_name.t
+    | Open of Module_name.t_with_report
+    | Include of Module_name.t_with_report
 
   and module_type =
-    | Sig of specification list
+    | Sig of Module_interface.specification_with_report list
     | Functor of
-        { arg_name : Module_name.t
-        ; arg_type : module_type
-        ; result_type : module_type
+        { arg_name : Module_name.t_with_report
+        ; arg_type : Module_interface.module_type_with_report
+        ; result_type : Module_interface.module_type_with_report
         }
+
+  type specification_with_report = specification With_report.t
+  type module_type_with_report = module_type With_report.t
 end = struct
   type specification =
-    | Val of Val.t
+    | Val of Val.t_with_report
     | Module of
-        { name : Module_name.t
-        ; ty : module_type
+        { name : Module_name.t_with_report
+        ; ty : Module_interface.module_type_with_report
         }
-    | Open of Module_name.t
-    | Include of Module_name.t
+    | Open of Module_name.t_with_report
+    | Include of Module_name.t_with_report
 
   and module_type =
-    | Sig of specification list
+    | Sig of Module_interface.specification_with_report list
     | Functor of
-        { arg_name : Module_name.t
-        ; arg_type : module_type
-        ; result_type : module_type
+        { arg_name : Module_name.t_with_report
+        ; arg_type : Module_interface.module_type_with_report
+        ; result_type : Module_interface.module_type_with_report
         }
+
+  type specification_with_report = specification With_report.t
+  type module_type_with_report = module_type With_report.t
 end
 
 and Compilation_unit : sig
   type t =
-    { interface : Module_interface.module_type
-    ; impl : Module_impl.t
+    { interface : Module_interface.module_type_with_report
+    ; impl : Module_impl.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end = struct
   type t =
-    { interface : Module_interface.module_type
-    ; impl : Module_impl.t
+    { interface : Module_interface.module_type_with_report
+    ; impl : Module_impl.t_with_report
     }
+
+  type t_with_report = t With_report.t
 end
