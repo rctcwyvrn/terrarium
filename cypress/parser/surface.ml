@@ -27,6 +27,18 @@ end = struct
   type t = string
 end
 
+and Constructor : sig
+  type t =
+    { path : Module_name.t list
+    ; name : string
+    }
+end = struct
+  type t =
+    { path : Module_name.t list
+    ; name : string
+    }
+end
+
 (* fixme-someday: unique identifiable types for these things that just end up as strings *)
 
 (* Types *)
@@ -59,10 +71,41 @@ end = struct
 end
 
 and Pattern : sig
-  (* fixme *)
-  type t
+  module Record_pattern_item : sig
+    type t =
+      { field : Field.t
+      ; equals : Pattern.t
+      }
+  end
+
+  type t =
+    | Binding of Value_name.t
+    | Constant of Constant.t
+    | Cons of
+        { hd : t
+        ; rest : t
+        }
+    | Constructor of Constructor.t
+    | Record of Record_pattern_item.t list
+    | Catchall
 end = struct
-  type t
+  module Record_pattern_item = struct
+    type t =
+      { field : Field.t
+      ; equals : Pattern.t
+      }
+  end
+
+  type t =
+    | Binding of Value_name.t
+    | Constant of Constant.t
+    | Cons of
+        { hd : t
+        ; rest : t
+        }
+    | Constructor of Constructor.t
+    | Record of Record_pattern_item.t list
+    | Catchall
 end
 
 and Record_def : sig
@@ -210,10 +253,29 @@ end = struct
 end
 
 and Module_expr : sig
-  (* fixme *)
-  type t
+  type t =
+    | Struct of Module_impl.t
+    | Functor of
+        { arg_name : Module_name.t
+        ; arg_type : Module_interface.module_type
+        ; expr : t
+        }
+    | App of
+        { f : t
+        ; arg : t
+        }
 end = struct
-  type t
+  type t =
+    | Struct of Module_impl.t
+    | Functor of
+        { arg_name : Module_name.t
+        ; arg_type : Module_interface.module_type
+        ; expr : t
+        }
+    | App of
+        { f : t
+        ; arg : t
+        }
 end
 
 (* defns *)
@@ -245,6 +307,8 @@ and Definition : sig
         { name : Module_name.t
         ; ty : Module_interface.module_type
         }
+    | Open of Module_name.t list
+    | Include of Module_expr.t
 end = struct
   type t =
     | Let of
@@ -261,22 +325,22 @@ end = struct
         { name : Module_name.t
         ; ty : Module_interface.module_type
         }
+    | Open of Module_name.t list
+    | Include of Module_expr.t
 end
 
 and Module_impl : sig
-  type pair =
-    { def : Definition.t
-    ; expr : Expr.t
-    }
+  type item =
+    | Def of Definition.t
+    | Expr of Expr.t
 
-  type t = pair list
+  type t = item list
 end = struct
-  type pair =
-    { def : Definition.t
-    ; expr : Expr.t
-    }
+  type item =
+    | Def of Definition.t
+    | Expr of Expr.t
 
-  type t = pair list
+  type t = item list
 end
 
 (* Modules *)
