@@ -124,10 +124,7 @@ let lookahead_matches parser =
   F
     (fun source pos ->
       match run parser source pos with
-      | Match { info; _ } ->
-        let tag = Fragment.init Info [%message "thyme->lookahead"] [%here] in
-        let info = List.map info ~f:(Fragment.tag ~tag) in
-        Match { next = pos; v = true; info }
+      | Match _ -> Match { next = pos; v = true; info = [] }
       (* Ignore the extra info on no_match? *)
       | No_match _info -> Match { next = pos; v = false; info = [] })
 ;;
@@ -359,13 +356,6 @@ let%expect_test "choice: match" =
     {|
     ((Ok match)
      (((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
-       (here <opaque>)
-       (refers_to
-        ((((ref_id 5) (value (((source dummy) (file_by_line <opaque>)) Eof))))))
-       (tags
-        (((label ()) (kind Info) (message thyme->lookahead) (here <opaque>)
-          (refers_to ()) (tags ())))))
-      ((label ()) (kind Debug) (message (thyme->exact_string (expected match)))
        (here <opaque>)
        (refers_to
         ((((ref_id 6) (value (((source dummy) (file_by_line <opaque>)) Eof))))))

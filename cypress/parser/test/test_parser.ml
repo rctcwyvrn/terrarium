@@ -22,40 +22,10 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected module)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected module)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected module)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected module)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected struct)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected struct)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected struct)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected struct)))
@@ -64,40 +34,10 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected type)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected type)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected type)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected type)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected {)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected {)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected {)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected {)))
@@ -106,28 +46,22 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
+  (("Fragment.message frag" (thyme->exact_string (expected :)))
+   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
+  ---
+  (("Fragment.message frag" (thyme->exact_string (expected in)))
+   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
+  ---
+  (("Fragment.message frag" cypress->identifier)
+   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
+  ---
+  (("Fragment.message frag" (thyme->exact_string (expected ";")))
+   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
+  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected in)))
@@ -136,89 +70,14 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected ";")))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected :)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected :)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -226,29 +85,8 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected ->)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected in)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected in)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -256,24 +94,6 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected })))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected })))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected })))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected })))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected let)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
@@ -283,26 +103,8 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected =)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -310,40 +112,10 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected .)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected let)))
@@ -352,28 +124,7 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected fun)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected fun)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected fun)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected fun)))
@@ -382,23 +133,8 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected ->)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ->)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -406,50 +142,14 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected .)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected ";;")))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected let)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -460,35 +160,11 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected =)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected .)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected .)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
@@ -496,46 +172,10 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" (thyme->exact_string (expected "(")))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
-  (("Fragment.message frag" (thyme->exact_string (expected "(")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected "(")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected "(")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ")")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ")")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ")")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected ")")))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected let)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected let)))
@@ -544,40 +184,10 @@ let%expect_test "nyaa" =
   (("Fragment.message frag" cypress->identifier)
    ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
   ---
-  (("Fragment.message frag" cypress->identifier)
-   ("Fragment.here frag" cypress/parser/src/lexer.ml:133:13))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected =)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
   (("Fragment.message frag" (thyme->exact_string (expected =)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected ";;")))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected end)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected end)))
-   ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
-  ---
-  (("Fragment.message frag" (thyme->exact_string (expected end)))
    ("Fragment.here frag" cypress/parser/src/token.ml:56:15))
   ---
   (("Fragment.message frag" (thyme->exact_string (expected end)))
