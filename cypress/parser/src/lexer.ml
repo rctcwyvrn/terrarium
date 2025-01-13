@@ -14,7 +14,7 @@ let keyword =
 ;;
 
 let blank =
-  (let%map _ = Thyme.Parser.one_or_more Thyme.Parser.whitespace_char ~here:[%here] in
+  (let%map _ = Thyme.Parser.zero_or_more Thyme.Parser.whitespace_char ~here:[%here] in
    Token.Kind.Blank)
   |> wrap_with_position
 ;;
@@ -149,6 +149,8 @@ let identifier =
       return (Token.Kind.Capital_ident s))
   in
   wrap_with_position parser
+  |> Thyme.Parser.add_info
+       ~frag:(Fragment.init Debug [%message "cypress->identifier"] here)
 ;;
 
 let arg_label =
@@ -173,7 +175,7 @@ let token_with_seperator parser =
   return [ token; sep ]
 ;;
 
-let bluebell_lexer =
+let cypress_lexer =
   let here = [%here] in
   let token =
     [ keyword; comment; number; char; string; arg_label; identifier ]
@@ -181,7 +183,9 @@ let bluebell_lexer =
     |> Thyme.Parser.choice ~here
   in
   let%bind _prefix = blank in
-  Thyme.Parser.one_or_more token ~here >>| List.concat
+  let%bind results = Thyme.Parser.one_or_more token ~here >>| List.concat in
+  let%bind _suffix = blank in
+  return results
 ;;
 
-let lex input = Thyme.Parser.parse_complete bluebell_lexer input
+let lex input = Thyme.Parser.parse_complete cypress_lexer input

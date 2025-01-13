@@ -18,7 +18,7 @@ type t =
   ; refers_to : Reference.t list option
   ; tags : t list
   }
-[@@deriving sexp_of]
+[@@deriving sexp_of, fields ~getters]
 
 let init ?label ?refers_to kind message here =
   { label

@@ -23,3 +23,5 @@ val init
 
 val tag : t -> tag:t -> t
 val add_ref : t -> Reference.t -> t
+val message : t -> Sexp.t
+val here : t -> Source_code_position.t
