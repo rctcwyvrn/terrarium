@@ -6,4 +6,4 @@ type 'a t [@@deriving sexp_of]
 
 include Monad.S with type 'a t := 'a t
 
-val add : 'a t -> Fragment.t -> 'a t
+val add : 'a t -> frag:Fragment.t -> 'a t

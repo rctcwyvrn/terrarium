@@ -4,6 +4,10 @@ let short = {|
 module Test : sig type t end = struct type t = int end
 |}
 
+let simple_functor =
+  {|module Test (module Arg : sig type t end) : sig type t end = struct type t = Arg.t|}
+;;
+
 let full_program =
   {| 
 module Test : sig 

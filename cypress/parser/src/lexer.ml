@@ -185,7 +185,7 @@ let cypress_lexer =
   let%bind _prefix = blank in
   let%bind results = Thyme.Parser.one_or_more token ~here >>| List.concat in
   let%bind _suffix = blank in
-  return results
+  return (List.filter results ~f:(fun token -> not (Token.has_kind token Blank)))
 ;;
 
 let lex input = Thyme.Parser.parse_complete cypress_lexer input

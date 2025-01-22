@@ -22,4 +22,4 @@ end
 include M
 include Monad.Make (M)
 
-let add { maybe_val; info } fragment = { maybe_val; info = fragment :: info }
+let add { maybe_val; info } ~frag = { maybe_val; info = frag :: info }

@@ -25,6 +25,7 @@ module Keyword : sig
     (* module things *)
     | Module
     | Struct
+    | Sig
     | Functor
     | End
     | Open
@@ -58,6 +59,21 @@ module Keyword : sig
 end
 
 module Kind : sig
+  module Argless : sig
+    type t =
+      | Blank
+      | Comment
+      | Ident
+      | Capital_ident
+      | Integer
+      | Float
+      | Char
+      | String
+      | Arg_label
+      | Keyword
+    [@@deriving sexp_of, equal]
+  end
+
   (* notes on things that arent here
      - literal variants (integer,float,char,string)
      - prefix/infix special cases *)
@@ -84,3 +100,7 @@ type t =
   ; end_ : Thyme.Source_file.Position.t
   }
 [@@deriving sexp_of, fields ~getters]
+
+val is_keyword : t -> Keyword.t -> bool
+val has_kind : t -> Kind.Argless.t -> bool
+val take_exn : t -> string

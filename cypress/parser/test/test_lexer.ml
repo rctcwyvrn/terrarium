@@ -16,7 +16,7 @@ let%expect_test "short" =
   [%expect
     {|
     (tokens
-     ((Keyword Module) (Capital_ident Test) (Keyword Colon) (Ident sig)
+     ((Keyword Module) (Capital_ident Test) (Keyword Colon) (Keyword Sig)
       (Keyword Type) (Ident t) (Keyword End) (Keyword Equal) (Keyword Struct)
       (Keyword Type) (Ident t) (Keyword Equal) (Keyword In) (Ident t)
       (Keyword End))) |}]
@@ -35,7 +35,7 @@ let%expect_test "full" =
   [%expect
     {|
     (tokens
-     ((Keyword Module) (Capital_ident Test) (Keyword Colon) (Ident sig)
+     ((Keyword Module) (Capital_ident Test) (Keyword Colon) (Keyword Sig)
       (Keyword Type) (Ident t) (Ident val) (Ident x_coord) (Keyword Colon)
       (Ident t) (Keyword Arrow_right) (Keyword In) (Ident t) (Ident val)
       (Ident y_coord) (Keyword Colon) (Ident t) (Keyword Arrow_right)

@@ -20,6 +20,7 @@ module Keyword = struct
     (* module things *)
     | Module
     | Struct
+    | Sig
     | Functor
     | End
     | Open
@@ -75,6 +76,7 @@ module Keyword = struct
       ; s "in" |> into In
       ; s "module" |> into Module
       ; s "struct" |> into Struct
+      ; s "sig" |> into Sig
       ; s "functor" |> into Functor
       ; s "end" |> into End
       ; s "open" |> into Open
@@ -104,6 +106,21 @@ module Keyword = struct
 end
 
 module Kind = struct
+  module Argless = struct
+    type t =
+      | Blank
+      | Comment
+      | Ident
+      | Capital_ident
+      | Integer
+      | Float
+      | Char
+      | String
+      | Arg_label
+      | Keyword
+    [@@deriving sexp_of, equal]
+  end
+
   type t =
     | Blank
     | Comment
@@ -127,3 +144,32 @@ type t =
   ; end_ : Thyme.Source_file.Position.t
   }
 [@@deriving sexp_of, fields ~getters]
+
+let is_keyword { kind; _ } k1 =
+  match kind with
+  | Keyword k2 -> Keyword.equal k1 k2
+  | _ -> false
+;;
+
+let has_kind { kind; _ } k1 =
+  let k2 =
+    match kind with
+    | Blank -> Kind.Argless.Blank
+    | Comment -> Comment
+    | Ident _ -> Ident
+    | Capital_ident _ -> Capital_ident
+    | Integer _ -> Integer
+    | Float _ -> Float
+    | Char _ -> Char
+    | String _ -> String
+    | Arg_label _ -> Arg_label
+    | Keyword _ -> Keyword
+  in
+  Kind.Argless.equal k1 k2
+;;
+
+let take_exn { kind; _ } =
+  match kind with
+  | Ident s | Capital_ident s | String s -> s
+  | _ -> raise_s [%message "wtf you didnt check"]
+;;
