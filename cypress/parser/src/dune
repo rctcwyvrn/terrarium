@@ -1,6 +1,0 @@
-(library
- (name cypress_parser)
- (libraries core async soil file_path thyme)
- (inline_tests)
- (preprocess
-  (pps ppx_jane)))

@@ -1,6 +1,0 @@
-(library
- (name compwiwer_tests)
- (libraries core)
- (inline_tests)
- (preprocess
-  (pps ppx_jane)))
