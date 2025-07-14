@@ -1,6 +1,6 @@
 # Terrarium
 
-Goal: A `rust` library operating system for web servers, much like `MirageOS`, designed for `qemu` and easy hacking
+Goal: A `rust` library operating system for hosting web servers, much like `MirageOS`, except designed for `qemu` and easy hacking
 
 ## Subgoals
 - Have it be fast and generate tiny binaries
