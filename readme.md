@@ -5,7 +5,7 @@ Goal: A `rust` library operating system for hosting web servers, much like `Mira
 ## Subgoals
 - Have it be fast and generate tiny binaries
 - Have it be easy to hack on and implement drivers
-- Have it be easy to swap out the target device (be that xen or baremetal)
+- Have it be easy to swap out the target device (be that baremetal or a cloud VM or whatever)
 
 ## Non-goals
 - Embedded/baremetal considerations (assume we're running on a general purpose hypervisor)
@@ -23,13 +23,12 @@ Goal: A `rust` library operating system for hosting web servers, much like `Mira
 3. Write something that boots in qemu and writes "hi" to the console device using `virtIO`
 
 ## Rust background
-
 1. Get a better grasp on rust `async` (read the async book)
 2. Investigate `async` runtimes
 3. Get used to writing `nostd`
 
 ## First boot test
-1. Hook the rust compiler and the bootloader together (ala `mirage-unikraft`)
+1. Hook the rust compiler and the bootloader together (ala mirage's `functoria`)
 2. Something that boots in qemu and writes an rust string to the console
 
 ## Building libraries
