@@ -13,6 +13,7 @@ impl Pic {
     pub const PIC_2_OFFSET: u8 = Self::PIC_1_OFFSET + 8;
 
     pub fn init_interrupts() -> () {
+        println!("[+] Initializing PICs and interrupts");
         unsafe {
             PICS.lock().initialize();
         }
@@ -21,8 +22,7 @@ impl Pic {
 
     pub fn notify_end_of_interrupt(idx: InterruptIndex) -> () {
         unsafe {
-            PICS.lock()
-                .notify_end_of_interrupt(InterruptIndex::Timer.into_u8());
+            PICS.lock().notify_end_of_interrupt(idx.into_u8());
         }
     }
 }
@@ -30,7 +30,9 @@ impl Pic {
 #[derive(Debug, Clone, Copy)]
 #[repr(u8)]
 pub enum InterruptIndex {
+    // Order is based on [this](https://os.phil-opp.com/hardware-interrupts/#the-8259-pic) diagram
     Timer = Pic::PIC_1_OFFSET,
+    Keyboard,
 }
 impl InterruptIndex {
     fn into_u8(self) -> u8 {
@@ -50,7 +52,7 @@ lazy_static! {
         }
 
         idt[InterruptIndex::Timer.into_u8()].set_handler_fn(timer_interrupt_handler);
-
+        idt[InterruptIndex::Keyboard.into_u8()].set_handler_fn(keyboard_handler_fn);
         idt
     };
 }
@@ -62,11 +64,6 @@ pub fn init_idt() {
 
 // Handlers
 
-extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
-    print!(".");
-    Pic::notify_end_of_interrupt(InterruptIndex::Timer);
-}
-
 extern "x86-interrupt" fn breakpoint_handler(stack_frame: InterruptStackFrame) {
     println!("EXCEPTION HIT: (Breakpoint)\n{:#?}", stack_frame)
 }
@@ -76,6 +73,41 @@ extern "x86-interrupt" fn double_fault_handler(
     _error_code: u64,
 ) -> ! {
     panic!("EXCEPTION HIT: (Double Fault)\n{:#?}", stack_frame)
+}
+
+extern "x86-interrupt" fn timer_interrupt_handler(_stack_frame: InterruptStackFrame) {
+    // print!(".");
+    Pic::notify_end_of_interrupt(InterruptIndex::Timer);
+}
+
+extern "x86-interrupt" fn keyboard_handler_fn(_stack_frame: InterruptStackFrame) {
+    use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1, layouts};
+    use spin::Mutex;
+    use x86_64::instructions::port::Port;
+
+    lazy_static! {
+        static ref KEYBOARD: Mutex<Keyboard<layouts::Us104Key, ScancodeSet1>> =
+            Mutex::new(Keyboard::new(
+                ScancodeSet1::new(),
+                layouts::Us104Key,
+                HandleControl::Ignore
+            ));
+    }
+
+    let mut keyboard = KEYBOARD.lock();
+    let mut port = Port::new(0x60);
+
+    let scancode: u8 = unsafe { port.read() };
+    if let Ok(Some(key_event)) = keyboard.add_byte(scancode) {
+        if let Some(key) = keyboard.process_keyevent(key_event) {
+            match key {
+                DecodedKey::Unicode(character) => print!("{}", character),
+                DecodedKey::RawKey(key) => print!("{:?}", key),
+            }
+        }
+    }
+
+    Pic::notify_end_of_interrupt(InterruptIndex::Keyboard);
 }
 
 #[test_case]

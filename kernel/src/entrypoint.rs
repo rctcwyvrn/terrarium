@@ -15,6 +15,12 @@ pub fn init() -> () {
     crate::vga_buffer::println!("Done booting up!");
 }
 
+pub fn main_loop() -> ! {
+    loop {
+        x86_64::instructions::hlt();
+    }
+}
+
 pub fn panic(info: &PanicInfo) -> ! {
     crate::vga_buffer::eprintln!("Uhoh - {}", info);
     loop {}

@@ -24,6 +24,5 @@ pub extern "C" fn _start() -> ! {
     test_main();
 
     kernel::entrypoint::init();
-
-    loop {}
+    kernel::entrypoint::main_loop()
 }

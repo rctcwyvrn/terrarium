@@ -143,7 +143,11 @@ lazy_static! {
 #[doc(hidden)]
 pub fn _print(args: fmt::Arguments) {
     use core::fmt::Write;
-    WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 
 #[macro_export]
@@ -160,7 +164,11 @@ macro_rules! println {
 #[doc(hidden)]
 pub fn _error_print(args: fmt::Arguments) {
     use core::fmt::Write;
-    ERROR_WRITER.lock().write_fmt(args).unwrap();
+    use x86_64::instructions::interrupts;
+
+    interrupts::without_interrupts(|| {
+        ERROR_WRITER.lock().write_fmt(args).unwrap();
+    });
 }
 
 #[macro_export]
@@ -191,10 +199,15 @@ fn test_println_many() {
 
 #[test_case]
 fn test_println_output() {
+    use x86_64::instructions::interrupts;
+
     let s = "Some test string that fits on a single line";
-    println!("{}", s);
-    for (i, c) in s.chars().enumerate() {
-        let screen_char = WRITER.lock().buffer.chars[VGA_BUFFER_HEIGHT - 2][i];
-        assert_eq!(char::from(screen_char.ascii_char), c);
-    }
+
+    interrupts::without_interrupts(|| {
+        println!("{}", s);
+        for (i, c) in s.chars().enumerate() {
+            let screen_char = WRITER.lock().buffer.chars[VGA_BUFFER_HEIGHT - 2][i];
+            assert_eq!(char::from(screen_char.ascii_char), c);
+        }
+    });
 }

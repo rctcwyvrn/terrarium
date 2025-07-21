@@ -34,7 +34,7 @@ fn panic(info: &PanicInfo) -> ! {
 pub extern "C" fn _start() -> ! {
     entrypoint::init();
     test_main();
-    loop {}
+    entrypoint::main_loop()
 }
 
 pub fn test_runner(tests: &[&dyn tests::Testable]) {
