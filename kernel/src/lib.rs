@@ -7,6 +7,7 @@
 
 pub mod entrypoint;
 mod interrupt;
+mod gdt;
 pub mod serial;
 mod tests;
 pub mod vga_buffer;
