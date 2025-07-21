@@ -8,7 +8,7 @@ lazy_static! {
         idt.breakpoint.set_handler_fn(breakpoint_handler);
 
         // Set the stack to the double fault interrupt stack
-        let mut br = idt.double_fault.set_handler_fn(double_fault_handler);
+        let br = idt.double_fault.set_handler_fn(double_fault_handler);
         unsafe {
            br.set_stack_index(gdt::DOUBLE_FAULT_IST_INDEX);
         }
