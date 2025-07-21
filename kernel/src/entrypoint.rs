@@ -2,12 +2,16 @@ use core::panic::PanicInfo;
 
 pub fn init() -> () {
     crate::vga_buffer::println!("Booting up!");
+
+    // global descriptor table for tss (double fault secondary stack)
     crate::gdt::init();
+
+    // interrupt descriptor table
     crate::interrupt::init_idt();
-    // trigger a page fault
-    unsafe {
-        *(0xdeadbeef as *mut u8) = 42;
-    };
+
+    // programmable interrupt controller init + enable
+    crate::interrupt::Pic::init_interrupts();
+
     crate::vga_buffer::println!("Done booting up!");
 }
 

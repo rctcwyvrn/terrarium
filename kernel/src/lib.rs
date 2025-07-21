@@ -6,8 +6,8 @@
 #![reexport_test_harness_main = "test_main"]
 
 pub mod entrypoint;
-mod interrupt;
 mod gdt;
+mod interrupt;
 pub mod serial;
 mod tests;
 pub mod vga_buffer;
