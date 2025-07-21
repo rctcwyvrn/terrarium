@@ -23,5 +23,7 @@ pub extern "C" fn _start() -> ! {
     #[cfg(test)]
     test_main();
 
-    kernel::entrypoint::entrypoint()
+    kernel::entrypoint::init();
+
+    loop {}
 }

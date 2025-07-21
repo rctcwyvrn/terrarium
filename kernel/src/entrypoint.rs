@@ -1,8 +1,9 @@
 use core::panic::PanicInfo;
 
-pub fn entrypoint() -> ! {
+pub fn init() -> () {
     crate::vga_buffer::println!("Booting up!");
-    loop {}
+    crate::interrupt::init_idt();
+    crate::vga_buffer::println!("Done booting up!");
 }
 
 pub fn panic(info: &PanicInfo) -> ! {
