@@ -8,11 +8,15 @@
 pub mod entrypoint;
 mod gdt;
 mod interrupt;
+pub mod memory;
 pub mod serial;
 mod tests;
 pub mod vga_buffer;
 
 use core::panic::PanicInfo;
+
+#[cfg(test)]
+use bootloader::{BootInfo, entry_point};
 
 pub fn test_panic_handler(info: &PanicInfo) -> ! {
     serial_println!("[failed]\n");
@@ -30,9 +34,11 @@ fn panic(info: &PanicInfo) -> ! {
 
 // This _start is only called in tests, since otherwise we're just a shared object
 #[cfg(test)]
-#[unsafe(no_mangle)]
-pub extern "C" fn _start() -> ! {
-    entrypoint::init();
+entry_point!(test_kernel_main);
+
+#[cfg(test)]
+fn test_kernel_main(boot_info: &'static BootInfo) -> ! {
+    entrypoint::init(boot_info);
     test_main();
     entrypoint::main_loop()
 }
