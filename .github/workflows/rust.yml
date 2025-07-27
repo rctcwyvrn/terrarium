@@ -11,14 +11,14 @@ env:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - name: Setup qemu
       uses: docker/setup-qemu-action@v3
     - uses: actions/checkout@v4
-    - name: Build
+    - name: Build kernel
       run: cargo build --verbose
-    - name: Run tests
+      working-directory: kernel/
+    - name: Run kernel tests
       run: cargo test --verbose
+      working-directory: kernel/
