@@ -9,6 +9,7 @@ lazy_static = { version = "1.5.0", features = ["spin_no_std"] }
 pc-keyboard = "0.8.0"
 pic8259 = "0.11.0"
 spin = "0.10.0"
+talc = { version = "4.4.3", features = ["allocator", "lock_api", "nightly_api"] }
 uart_16550 = "0.3.2"
 x86_64 = "0.15.2"
 
