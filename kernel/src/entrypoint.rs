@@ -1,10 +1,12 @@
 use core::panic::PanicInfo;
 
-use alloc::{boxed::Box, vec::Vec};
 use bootloader::BootInfo;
 use x86_64::VirtAddr;
 
-use crate::println;
+use crate::{
+    deferred::{UnitDeferred, simple_executor::SimpleExecutor},
+    drivers, println,
+};
 
 pub fn init(boot_info: &'static BootInfo) -> () {
     crate::vga_buffer::println!("Booting up!");
@@ -31,14 +33,9 @@ pub fn init(boot_info: &'static BootInfo) -> () {
 }
 
 pub fn main_loop() -> ! {
-    let b = Box::new("hi!");
-    println!("{} this is terrarium!", b);
-
-    let mut vec = Vec::new();
-    for i in 0..500 {
-        vec.push(i);
-    }
-    println!("vec at {:p}", vec.as_slice());
+    let mut executor = SimpleExecutor::new();
+    executor.spawn(UnitDeferred::new(drivers::keyboard::print_keypresses()));
+    executor.run();
 
     loop {
         x86_64::instructions::hlt();

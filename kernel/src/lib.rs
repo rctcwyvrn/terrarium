@@ -6,6 +6,8 @@
 #![reexport_test_harness_main = "test_main"]
 
 pub mod allocator;
+pub mod deferred;
+pub mod drivers;
 pub mod entrypoint;
 mod gdt;
 mod interrupt;
