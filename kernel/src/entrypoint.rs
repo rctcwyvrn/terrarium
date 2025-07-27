@@ -4,8 +4,8 @@ use bootloader::BootInfo;
 use x86_64::VirtAddr;
 
 use crate::{
-    deferred::{UnitDeferred, simple_executor::SimpleExecutor},
-    drivers, println,
+    deferred::{UnitDeferred, executor::Executor},
+    drivers,
 };
 
 pub fn init(boot_info: &'static BootInfo) -> () {
@@ -33,13 +33,9 @@ pub fn init(boot_info: &'static BootInfo) -> () {
 }
 
 pub fn main_loop() -> ! {
-    let mut executor = SimpleExecutor::new();
+    let mut executor = Executor::new();
     executor.spawn(UnitDeferred::new(drivers::keyboard::print_keypresses()));
     executor.run();
-
-    loop {
-        x86_64::instructions::hlt();
-    }
 }
 
 pub fn panic(info: &PanicInfo) -> ! {
