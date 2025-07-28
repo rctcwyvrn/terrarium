@@ -21,7 +21,11 @@ jobs:
       with:
         toolchain: nightly-2025-06-01-x86_64-unknown-linux-gnu
         override: true
-        components: rust-src, llvm-tools-preview, cargo
+        components: rust-src, llvm-tools-preview, cargo, rustc
+    - name: Install bootloader from crates.io
+      uses: baptiste0928/cargo-install@v3
+      with:
+        crate: cargo-bootimage
     - name: Build kernel
       run: cargo build --verbose
       working-directory: kernel/
