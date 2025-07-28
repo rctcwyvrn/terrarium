@@ -5,7 +5,7 @@
 #![reexport_test_harness_main = "test_main"]
 
 use core::panic::PanicInfo;
-use kernel::{QemuExitCode, exit_qemu, serial_println};
+use terrarium::{QemuExitCode, exit_qemu, serial_println};
 
 // For tests that should panic on basic qemu boot
 

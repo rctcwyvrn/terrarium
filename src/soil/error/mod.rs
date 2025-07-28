@@ -4,11 +4,8 @@ pub struct Error(pub String);
 
 #[macro_export]
 macro_rules! error {
-    () => {
-        $crate::std::error::Error(String::from_str(""))
-    };
     ($arg:tt) => {
-        $crate::std::error::Error(String::from($arg))
+        $crate::soil::error::Result(Err($crate::soil::error::Error(String::from($arg))))
     };
 }
 pub(crate) use error;

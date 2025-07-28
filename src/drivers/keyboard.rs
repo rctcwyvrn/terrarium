@@ -11,6 +11,7 @@ use pc_keyboard::{DecodedKey, HandleControl, Keyboard, ScancodeSet1, layouts};
 use crate::{eprintln, print};
 
 static SCANCODE_QUEUE: OnceCell<ArrayQueue<u8>> = OnceCell::uninit();
+const SCANCODE_QUEUE_CAPACITY: usize = 100;
 
 /// Called by the keyboard interrupt handler
 ///
@@ -35,7 +36,7 @@ pub struct ScancodeStream {
 impl ScancodeStream {
     pub fn new() -> Self {
         SCANCODE_QUEUE
-            .try_init_once(|| ArrayQueue::new(100))
+            .try_init_once(|| ArrayQueue::new(SCANCODE_QUEUE_CAPACITY))
             .expect("ScancodeStream::new should only be called once");
         ScancodeStream { _private: () }
     }

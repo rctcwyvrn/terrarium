@@ -25,7 +25,7 @@ pub trait Read {
             }
         }
         if !buf.is_empty() {
-            Result(Err(error!("failed to fill whole buffer")))
+            error!("failed to fill whole buffer")
         } else {
             Result(Ok(()))
         }

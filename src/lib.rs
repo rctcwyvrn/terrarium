@@ -14,7 +14,7 @@ mod gdt;
 mod interrupt;
 pub mod memory;
 pub mod serial;
-pub mod std;
+pub mod soil;
 mod tests;
 pub mod vga_buffer;
 

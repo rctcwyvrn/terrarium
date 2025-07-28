@@ -1,7 +1,7 @@
 #![no_std]
 #![no_main]
 #![feature(custom_test_frameworks)]
-#![test_runner(kernel::test_runner)]
+#![test_runner(terrarium::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
 extern crate alloc;
@@ -9,8 +9,8 @@ extern crate alloc;
 use alloc::{boxed::Box, vec::Vec};
 use bootloader::{BootInfo, entry_point};
 use core::panic::PanicInfo;
-use kernel::allocator::HEAP_SIZE;
-use kernel::{entrypoint, println};
+use terrarium::allocator::HEAP_SIZE;
+use terrarium::{entrypoint, println};
 
 entry_point!(main);
 
