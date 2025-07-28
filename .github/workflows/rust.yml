@@ -25,7 +25,7 @@ jobs:
     - name: Install bootloader from crates.io
       uses: baptiste0928/cargo-install@v3
       with:
-        crate: cargo-bootimage
+        crate: bootimage
     - name: Build kernel
       run: cargo build --verbose
       working-directory: kernel/
