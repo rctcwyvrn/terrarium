@@ -2,6 +2,7 @@
 #![no_main]
 #![feature(custom_test_frameworks)]
 #![feature(abi_x86_interrupt)]
+#![feature(core_io_borrowed_buf)]
 #![test_runner(crate::test_runner)]
 #![reexport_test_harness_main = "test_main"]
 
@@ -13,6 +14,7 @@ mod gdt;
 mod interrupt;
 pub mod memory;
 pub mod serial;
+pub mod std;
 mod tests;
 pub mod vga_buffer;
 
